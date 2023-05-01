@@ -1,4 +1,4 @@
-## RISC-V simulator(single cycle program)을 구현하는 프로젝트
+# RISC-V simulator(single cycle program)을 구현하는 프로젝트
 
 #### 개발 환경 : LINUX
 <br/><br/> 
@@ -7,8 +7,13 @@ Instruction Decode(ID) 단계 : 가져온 instruction을 해석하는 단계 <br
 Execute(EX) 단계            : 해석된 instruction을 바탕으로 계산하는 단계 <br/><br/> 
 Memory(MEM) 단계            : 데이터 메모리에 접근하는 단계 <br/><br/> 
 Write back(WB) 단계         : 메모리에 저장된 값을 읽어오는 단계<br/><br/> 
+#
+<br/><br/>
 
-<br/><br/> 
+우선 연산을 수행하기 위해 instruction 메모리상의 명령어를 읽어온다. instruction 메모리상의 명령어는 pc(program counter)에 저장이 되어있으며, 이 명령어를 찾아온 후에는 다음 주소를 가리키기 위하여 pc+4를 해준다(IF). 어떤 type의 어떤 연산을 할지 결정하기 위해서는 opcode의 값을 이용하기로 했다. instruction의 젤 아래에 있는 7 비트의 opcode를 10진수로 받아와서 그 값에 따라 특정 연산을 하기로 하였다(ID). <그림 0.1>은 2진수(배열)를 10진수로 받아오는 함수이고, <그림 0.2>는 Instruction Fetch를 나타낸 함수이며, <그림 0.3>는 opcode를 단순히 2진수의 형태로 받아온 것이다.
+<br/><br/>
+<img width="800" alt="image" src="https://user-images.githubusercontent.com/110325367/235459826-e286ad9a-0722-43e9-86ce-3342846944c0.png">
+<br/><br/>
 
 ## ✔ add <br/><br/> 
 add는 R-type의 연산자로, 레지스터값 두 개(rs1, rs2)를 더하여 또 다른 레지스터(rd)에 저장하는 방법의 연산이다. add의 opcode는 0110011이고, 이를 10진수로 나타내면 51이다. 따라서 opcode가 51이라면 EX에서 add 연산을 수행하도록 한다. Instruction에서 각 비트 별로 나눠서 위치에 맞춰서 피연산자 rs1과 rs2를 받아오고(ID), 이 받아온 레지스터들을 EX 단계에서 둘이 더해준 후 temp에 저장을 해준다(EX). 이후, temp에 저장을 해준 연산 결과를 write back 단계에서 또 다른 레지스터(rd)에 저장을 해준다(WB). 이때, add 연산에서는 메모리에 대한 접근이 불필요하다. 또한, x0은 레지스터 상에서 상수 0으로 고정되어있기 때문에 x0에는 값이 들어가면 안된다. 따라서 결과 값을 저장할 레지스터(rd)가 0이 아닌 경우에만 이러한 연산이 실행되고, 0인 경우에는 연산값이 저장되지 않고 0이 된다. 아래 그림들은 add 연산에서 수행되는 ID, EX, WB 과정을 나타낸 코드이다.
